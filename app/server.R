@@ -1,204 +1,132 @@
-#
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-###############################Install Related Packages #######################
 if (!require("shiny")) {
-    install.packages("shiny")
-    library(shiny)
+  install.packages("shiny")
+  library(shiny)
 }
 if (!require("leaflet")) {
-    install.packages("leaflet")
-    library(leaflet)
+  install.packages("leaflet")
+  library(leaflet)
 }
 if (!require("leaflet.extras")) {
-    install.packages("leaflet.extras")
-    library(leaflet.extras)
+  install.packages("leaflet.extras")
+  library(leaflet.extras)
 }
 if (!require("dplyr")) {
-    install.packages("dplyr")
-    library(dplyr)
+  install.packages("dplyr")
+  library(dplyr)
 }
 if (!require("magrittr")) {
-    install.packages("magrittr")
-    library(magrittr)
+  install.packages("magrittr")
+  library(magrittr)
 }
 if (!require("mapview")) {
-    install.packages("mapview")
-    library(mapview)
+  install.packages("mapview")
+  library(mapview)
 }
 if (!require("leafsync")) {
-    install.packages("leafsync")
-    library(leafsync)
+  install.packages("leafsync")
+  library(leafsync)
+}
+if (!require("choroplethr")) install.packages("choroplethr")
+if (!require("devtools")) install.packages("devtools")
+
+library(devtools)
+
+if (!require("choroplethrZip")) 
+  devtools::install_github('arilamstein/choroplethrZip@v1.5.0')
+
+if (!require("ggplot2")) devtools::install_github("hadley/ggplot2")
+if (!require("ggmap")) devtools::install_github("dkahle/ggmap")
+
+library(lubridate)
+library(tidyr)
+
+if(!(file.exists("../data/Rodent_inspection_post_2018.csv"))){
+  df = read.csv("../data/Rodent_inspection.csv")
+  df_post_2018 = df %>% 
+    set_names(tolower(names(df))) %>%
+    drop_na() %>%
+    filter(year(strptime(inspection_date,"%m/%d/%Y %H:%M:%S")) >= 2018) %>% 
+    filter(zip_code > 0) 
+  
+  write.csv(df_post_2018, "../data/Rodent_inspection_post_2018.csv")
 }
 
-#Data Processing
-total_citi_bike_df = read.csv('../data/citibike_data.csv')
-##compute the daily in and out difference for the station
-total_citi_bike_df$day_diff = total_citi_bike_df$endcount - total_citi_bike_df$startcount
-#assign each column to weekend or weekday
-total_citi_bike_df$weekend_or_weekday = ifelse(total_citi_bike_df$weekday %in% c('Saturday','Sunday'), "Weekend", "Weekday")
+set.seed(5243)
 
-#station info
-citi_bike_station_info <- total_citi_bike_df[,c('station_id','station_name','station_longitude','station_latitude')]
-#remove the duplicates based on station id 
-citi_bike_station_info <- citi_bike_station_info[!duplicated(citi_bike_station_info[ , c("station_id")]),]
-
-#split the bike data to pre-covid and covid time period
-citi_bike_pre_covid_df = total_citi_bike_df[difftime(total_citi_bike_df$date,"2019-05-31")<=0,] #2019-05-01 ~ 2019-05-31
-citi_bike_covid_df = total_citi_bike_df[difftime(total_citi_bike_df$date,"2020-04-30")>=0,] #2020-05-01 ~ 2021-05-31
+df = read.csv("../data/Rodent_inspection_post_2018.csv")
+df = df %>% 
+  mutate(region=as.character(zip_code)) %>%
+  mutate(inspection_date = strptime(inspection_date,"%m/%d/%Y %H:%M:%S"))
 
 
-# Define server logic required to draw a histogram
+df_post_2020 = df %>% 
+  filter(year(inspection_date) >= 2020) %>%
+  sample_n(50000)
+
+df_pre_2020 = df %>% 
+  filter(year(inspection_date) < 2020) %>%
+  sample_n(50000)
+
+
 shinyServer(function(input, output) {
-
-    ## Map Tab section
-    
-    output$left_map <- renderLeaflet({
+  
+  ## Map Tab section
+  output$left_map <- renderPlot({
     
     #adjust for weekday/weekend effect
-    if (input$adjust_time =='Overall') {
-        leaflet_plt_df <- citi_bike_pre_covid_df %>% 
-                            group_by(station_id) %>%
-                            summarise(total_start_count = sum(startcount),
-                                      total_end_count = sum(endcount),
-                                      total_day_diff = sum(day_diff),
-                                      total_diff_percentage = sum(day_diff)/sum(startcount),
-                            ) %>% left_join(citi_bike_station_info,by='station_id')
-    } else {
-        leaflet_plt_df <- citi_bike_pre_covid_df %>% 
-                            filter(weekend_or_weekday == input$adjust_time) %>%
-                            group_by(station_id) %>%
-                                summarise(total_start_count = sum(startcount),
-                                          total_end_count = sum(endcount),
-                                          total_day_diff = sum(day_diff),
-                                          total_diff_percentage = sum(day_diff)/sum(startcount),
-                                ) %>% left_join(citi_bike_station_info,by='station_id')
-                            } 
+    if (input$inspection_type =='Overall') {
+      leaflet_plt_df = df_pre_2020 %>% 
+        group_by(region) %>%
+        summarise(
+          value = n()
+        ) 
+    } 
 
-        
-    map_2019 <- leaflet_plt_df %>%
-         leaflet(options = leafletOptions(minZoom = 11, maxZoom = 13)) %>%
-         addTiles() %>%
-         addProviderTiles("CartoDB.Positron",
-                          options = providerTileOptions(noWrap = TRUE)) %>%
-         setView(-73.9834,40.7504,zoom = 12)
-     
-     if (input$adjust_score == 'start_cnt') {
-         map_2019 %>%
-             addHeatmap(
-                        lng=~station_longitude,
-                        lat=~station_latitude,
-                        intensity=~total_start_count,
-                        max=4000,
-                        radius=8,
-                        blur=10)
-     }else if (input$adjust_score == 'end_cnt') {
-         map_2019 %>%
-             addHeatmap(
-                        lng=~station_longitude,
-                        lat=~station_latitude,
-                        intensity=~total_end_count,
-                        max=4000,
-                        radius=8,
-                        blur=10)
-     } else if (input$adjust_score == 'day_diff_absolute'){
-         map_2019 %>%
-             addHeatmap(
-                        lng=~station_longitude,
-                        lat=~station_latitude,
-                        intensity=~total_day_diff,
-                        max=50,
-                        radius=8,
-                        blur=10)
-         
-     }else if (input$adjust_score == 'day_diff_percentage'){
-         map_2019 %>%
-             addHeatmap(
-                        lng=~station_longitude,
-                        lat=~station_latitude,
-                        intensity=~total_diff_percentage,#change to total day diff percentage
-                        max=0.1,
-                        radius=8,
-                        blur=10)
-         
-     }
-     }) #left map plot
+    else{
+      leaflet_plt_df = df_pre_2020 %>%
+        filter(inspection_type == input$inspection_type) %>%
+        group_by(region) %>%
+        summarise(
+          value = n()
+        )
+    }
     
-    output$right_map <- renderLeaflet({
-        #adjust for weekday/weekend effect
-        if (input$adjust_time =='Overall') {
-            leaflet_plt_df <- citi_bike_covid_df %>% 
-                group_by(station_id) %>%
-                summarise(total_start_count = sum(startcount),
-                          total_end_count = sum(endcount),
-                          total_day_diff = sum(day_diff),
-                          total_diff_percentage = sum(day_diff)/sum(startcount),
-                ) %>% left_join(citi_bike_station_info,by='station_id')
-        } else {
-            leaflet_plt_df <- citi_bike_covid_df %>% 
-                filter(weekend_or_weekday == input$adjust_time) %>%
-                group_by(station_id) %>%
-                summarise(total_start_count = sum(startcount),
-                          total_end_count = sum(endcount),
-                          total_day_diff = sum(day_diff),
-                          total_diff_percentage = sum(day_diff)/sum(startcount),
-                ) %>% left_join(citi_bike_station_info,by='station_id')
-        } 
-        #initial the map to plot on
-        map_2020 <- leaflet_plt_df %>%
-            leaflet(options = leafletOptions(minZoom = 11, maxZoom = 13)) %>%
-            addTiles() %>%
-            addProviderTiles("CartoDB.Positron",
-                             options = providerTileOptions(noWrap = TRUE)) %>%
-            setView(-73.9834,40.7504,zoom = 12) 
-        
-        if (input$adjust_score == 'start_cnt') {
-            map_2020 %>%
-                addHeatmap(
-                           lng=~station_longitude,
-                           lat=~station_latitude,
-                            intensity=~total_start_count, #change to total start count
-                            max=4000,
-                            radius=8,
-                           blur=10)
-        }else if (input$adjust_score == 'end_cnt') {
-            map_2020 %>%
-                addHeatmap(
-                           lng=~station_longitude,
-                           lat=~station_latitude,
-                           intensity=~total_end_count,#change to total end count
-                           max=4000,
-                           radius=8,
-                           blur=10)
-        } else if (input$adjust_score == 'day_diff_absolute'){
-            map_2020 %>%
-                addHeatmap(
-                           lng=~station_longitude,
-                           lat=~station_latitude,
-                           intensity=~total_day_diff,#change to total day diff
-                           max=50,
-                           radius=8,
-                           blur=10)
-            
-        }else if (input$adjust_score == 'day_diff_percentage'){
-            map_2020 %>%
-                addHeatmap(
-                           lng=~station_longitude,
-                           lat=~station_latitude,
-                           intensity=~total_diff_percentage,#change to total day diff percentage
-                           max=0.1,
-                           radius=8,
-                           blur=10)
-            
-        }
-        
-    }) #right map plot
+    
+    zip_choropleth(leaflet_plt_df,
+                   title       = "Pre Covid Rodents Inspection",
+                   legend      = "Number of sales",
+                   county_zoom = 36061)
+   
+    
+    
+  }) #left map plot
+  
+  output$right_map <- renderPlot({
+    #adjust for weekday/weekend effect
+    if (input$inspection_type =='Overall') {
+      leaflet_plt_df = df_post_2020 %>% 
+        group_by(region) %>%
+        summarise(
+          value = n()
+        ) 
+    } 
+    
+    else{
+      leaflet_plt_df = df_post_2020 %>%
+        filter(inspection_type == input$inspection_type) %>%
+        group_by(region) %>%
+        summarise(
+          value = n()
+        )
+    }
+    #initial the map to plot on
 
+    
+    zip_choropleth(leaflet_plt_df,
+                                  title       = "Post Covid Rodents Inspection",
+                                  legend      = "Number of inpections",
+                                  county_zoom = 36061)
+    
+  }) #right map plot
+  
 })
-
-
