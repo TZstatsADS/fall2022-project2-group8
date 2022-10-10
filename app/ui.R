@@ -1,4 +1,3 @@
-
 if (!require("shiny")) {
   install.packages("shiny")
   library(shiny)
@@ -28,11 +27,11 @@ shinyUI(
              tabPanel("Homepage",
                       icon = icon("house-user"),
                       fluidPage(
-                            tags$h2("Summary"),
-                            setBackgroundImage(src = "https://images6.alphacoders.com/105/1051726.jpg")
-                          )
-                
-                    ),
+                        tags$h2("Summary")
+                        #setBackgroundImage(src = "https://images6.alphacoders.com/105/1051726.jpg")
+                      )
+                      
+             ),
              
              #------------------------------- tab panel - Maps ---------------------------------
              tabPanel("Map",
@@ -62,12 +61,7 @@ shinyUI(
                                           status = "danger",
                                           fill = TRUE
                                         ),
-                                                    
-                                        # selectInput('adjust_weather',
-                                        #             label = 'Adjust for Weather',
-                                        #             choices = c('Yes','No'), 
-                                        #             selected = 'Yes'
-                                        #             ),
+                                        
                                         style = "opacity: 0.80"
                                         
                           ), #Panel Control - Closing
@@ -76,37 +70,78 @@ shinyUI(
              
              #------------------------------- tab panel - Maps ---------------------------------
              tabPanel("Bar plot", 
-                     fluidPage(
-                              titlePanel("Bar Plot"),
-                              sidebarLayout(
-                               
-                               sidebarPanel(
-                                 selectInput(inputId = "Borough",
-                                             label = "Borough:",
-                                             choices = c("Manhattan", 
-                                                         "Bronx",
-                                                         "Brooklyn", 
-                                                         "Queens", 
-                                                         "Staten Island")),
-                                 
-                                 selectInput(inputId = "Inspection_type",
-                                             label = "Inspection type:",
-                                             choices = c("Overall", 
-                                                         "BAIT", 
-                                                         "Compliance",
-                                                         "Initial",
-                                                         "CLEAN_UPS",
-                                                         "STOPPAGE")),
-                                 numericInput("obs", "lines", 5)
-                                 
-                               ),
-                               
-                              mainPanel(
-                                  
-                                )
-                             )
-                )
+                      fluidPage(
+                        titlePanel("Bar Plot"),
+                        sidebarLayout(
+                          
+                          sidebarPanel(
+                            selectInput(inputId = "Borough",
+                                        label = "Borough:",
+                                        choices = c("Manhattan", 
+                                                    "Bronx",
+                                                    "Brooklyn", 
+                                                    "Queens", 
+                                                    "Staten Island")),
+                            
+                            selectInput(inputId = "Inspection_type",
+                                        label = "Inspection type:",
+                                        choices = c("Overall", 
+                                                    "BAIT", 
+                                                    "Compliance",
+                                                    "Initial",
+                                                    "CLEAN_UPS",
+                                                    "STOPPAGE")),
+                            numericInput("obs", "lines", 5)
+                            
+                          ),
+                          
+                          mainPanel(
+                            plotOutput("barPlot1"),
+                            plotOutput("barPlot2"),
+                            plotOutput("barPlot3"),
+                          )
+                        )
+                      )
              ),
+             
+             tabPanel("Appendix", 
+                      icon = icon("circle-info"),
+                      fluidPage( 
+               # Data source
+               HTML(
+                 "<h2> Data Sources </h2>
+                <h4> <p><li>NYC Rodent Inspection Data: <a href='https://data.cityofnewyork.us/Health/Rodent-Inspection/p937-wjvj'>NYC Rodent Inspection Dataset</a></li></p></h4>
+                 "
+               ),
+               
+               titlePanel("Disclaimers"),
+               
+               # Summary
+               HTML(
+                 " <p>We drew our business insights from NYC Open data.</p>",
+                ),
+               
+               titlePanel("Acknowledgement  "),
+               
+               HTML(
+                 " <p>This application is built using R shiny app.</p>",
+                 "<p>The following R packages were used in to build this RShiny application:</p>
+                <li>Shinytheme</li>
+                <li>Tidyr</li>
+                <li>ggplot2</li>
+                <li>choroplethrZip</li>"
+               ),
+               
+               titlePanel("Contacts"),
+               
+               HTML(
+                 " <p>For more information please feel free to contact</p>",
+                 " <p>Kim, Woonsup wk2371@columbia.edu </p>",
+                 " <p>Limaye, Dhruv djl2187@columbia.edu</p>",
+                 " <p>Sinha, Shreya ss6415@columbia.edu </p>",
+                 " <p>Tu, Zhongcheng zt2286@columbia.edu</p>",
+                 " <p>Xie, Peng px2143@columbia.edu</p>")
+             )) # end of tab
              
              
   ) #navbarPage closing  
