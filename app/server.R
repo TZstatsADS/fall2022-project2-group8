@@ -94,7 +94,7 @@ shinyServer(function(input, output) {
     
     zip_choropleth(leaflet_plt_df,
                    title       = "Pre Covid Rodents Inspection",
-                   legend      = "Number of sales",
+                   legend      = "Number of inspections",
                    county_zoom = 36061)
    
     
@@ -124,7 +124,7 @@ shinyServer(function(input, output) {
     
     zip_choropleth(leaflet_plt_df,
                                   title       = "Post Covid Rodents Inspection",
-                                  legend      = "Number of inpections",
+                                  legend      = "Number of inspections",
                                   county_zoom = 36061)
     
   }) #right map plot
