@@ -26,10 +26,32 @@ shinyUI(
              #------------------------------- tab panel - Homepage ---------------------------------
              tabPanel("Homepage",
                       icon = icon("house-user"),
-                      fluidPage(
-                        tags$h2("Summary")
-                        #setBackgroundImage(src = "https://images6.alphacoders.com/105/1051726.jpg")
+                      fluidRow(
+                        div(
+                          style = "height:300px;width:100%;padding:0 300px",
+                          tags$img(src = "https://wallpaperaccess.com/full/247102.jpg", height = '300px', width = '100%')
+                        )
+                      ),
+                      fluidRow(
+                        div(
+                          style = "height:300px;width:100%;padding:50px 300px",
+                        column(width = 6, offset = 0,
+                                      div(
+                                          tags$h3("Introduction",style="text-align:center"),
+                                          # Content
+                                          tags$p("Input here",style="font-size:18px")
+                                      )
+                          ),
+                        column(width = 6, offset = 0,
+                             div(       
+                               tags$h3("Conclusion",style="text-align:center"),
+                               # Content
+                               tags$p("Input here",style="font-size:18px")
+                             )
+                          )
+                        )
                       )
+                      
                       
              ),
              
@@ -48,7 +70,7 @@ shinyUI(
                                         tags$h4('Rodents Inspection Comparison'), 
                                         tags$br(),
                                         tags$h5('Pre-covid(Left) Post-covid(Right)'), 
-                                        prettyRadioButtons(
+                                        awesomeRadio(
                                           inputId = "inspection_type",
                                           label = "Inspection type:", 
                                           choices = c("Overall", 
@@ -59,7 +81,6 @@ shinyUI(
                                                       "STOPPAGE"),
                                           inline = TRUE, 
                                           status = "danger",
-                                          fill = TRUE
                                         ),
                                         
                                         style = "opacity: 0.80"
@@ -69,21 +90,23 @@ shinyUI(
              ), #tabPanel maps closing
              
              #------------------------------- tab panel - Maps ---------------------------------
-             tabPanel("Bar plot", 
+             tabPanel("Rodents Inspection EDA", 
+                      icon = icon("chart-simple"),
                       fluidPage(
-                        titlePanel("Bar Plot"),
+                        titlePanel("Rodents Inspection EDA"),
                         sidebarLayout(
                           
                           sidebarPanel(
-                            selectInput(inputId = "Borough",
+                            selectInput(inputId = "borough",
                                         label = "Borough:",
-                                        choices = c("Manhattan", 
+                                        choices = c("Overall",
+                                                    "Manhattan", 
                                                     "Bronx",
                                                     "Brooklyn", 
                                                     "Queens", 
                                                     "Staten Island")),
                             
-                            selectInput(inputId = "Inspection_type",
+                            selectInput(inputId = "inspection_type",
                                         label = "Inspection type:",
                                         choices = c("Overall", 
                                                     "BAIT", 
@@ -91,8 +114,26 @@ shinyUI(
                                                     "Initial",
                                                     "CLEAN_UPS",
                                                     "STOPPAGE")),
-                            numericInput("obs", "lines", 5)
                             
+                            selectInput(inputId = "result",
+                                        label = "Result:",
+                                        choices = c("Overall", 
+                                                    "Bait applied", 
+                                                    "Rat Activity",
+                                                    "Passed",
+                                                    "Failed for Other R",
+                                                    "STOPPAGE done",
+                                                    "Monitoring visit",
+                                                    "Cleanup done"
+                                                    )),
+                            dateRangeInput(
+                              inputId = "inspection_date",
+                              label = "Inspection Date:",
+                              start = "2018-01-01",
+                              end = lubridate::today()
+                              
+                            ),
+
                           ),
                           
                           mainPanel(
@@ -108,6 +149,7 @@ shinyUI(
                       icon = icon("circle-info"),
                       fluidPage( 
                # Data source
+              div(style="text-align:center",
                HTML(
                  "<h2> Data Sources </h2>
                 <h4> <p><li>NYC Rodent Inspection Data: <a href='https://data.cityofnewyork.us/Health/Rodent-Inspection/p937-wjvj'>NYC Rodent Inspection Dataset</a></li></p></h4>
@@ -140,7 +182,7 @@ shinyUI(
                  " <p>Limaye, Dhruv djl2187@columbia.edu</p>",
                  " <p>Sinha, Shreya ss6415@columbia.edu </p>",
                  " <p>Tu, Zhongcheng zt2286@columbia.edu</p>",
-                 " <p>Xie, Peng px2143@columbia.edu</p>")
+                 " <p>Xie, Peng px2143@columbia.edu</p>"))
              )) # end of tab
              
              
