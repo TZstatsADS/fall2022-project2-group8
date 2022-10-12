@@ -76,7 +76,7 @@ df_pre_2020$inspection_date_month_yr=format(as.Date(df_pre_2020$inspection_date)
 df_post_2020$inspection_date_month_yr=format(as.Date(df_post_2020$inspection_date), "%Y-%m")
 
 if(!(file.exists("../data/Electic_post_2018.csv"))){
-  elec = read.csv("../data/Electric_Consumption_And_Cost__2010_-_Feb_2022_.csv")
+  elec = read.csv("../data/Electric_Consumption.csv")
   elec_post_2018 = elec %>% 
     set_names(tolower(names(elec))) %>%
     filter(year(strptime(elec$revenue.month,"%Y-%M")) >= 2018) 
