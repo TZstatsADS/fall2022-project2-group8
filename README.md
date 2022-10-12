@@ -42,13 +42,24 @@ Term: Fall 2022
 In a densely populated city like New York, the presence of large numbers of rodents is a common problem. Rodent infestations can cause many problems including health hazards, spread of disease, and property damage. With the changes and fluctuations in the housing and rent markets caused by the COVID-19 pandemic, it is especially important for New York city residents to understand how their properties and residences could be affected by the presence of rodents. It is also important for consumers to understand how accurate the rodent data is by understanding how recently the inspections for rodents were conducted. 
 Therefore, as an extermination and property maintenance company, we sought to provide our consumers with data to understand rodent infestations in their neighborhoods and how it can affect their energy costs. We provided an interactive map of NYC to show the areas and neighborhoods where rodent infestations are most prevalent. Similarly, we displayed an interactive map that showed the prevalence of rodent inspections in each area. We also showed barplots of this data, and barplots and heat maps showing the correlation between rodent infestations and energy costs in the boroughs of New York City.
 
+The four tabs presented are a proof of concept, illustrating:
+
+Map:
+The maps show a heatmap indicating the number of rodents found and number of inspections conducted in each zipcode in NYC before and after the COVID 19 pandemic.
+
+Inspection Data:
+This tab shows a collection of bar plots and trend plots that display the number of inspections and rodent complaint data over time and before and after COVID.
+
+Energy:
+This tab shows a heat map and barplots of how the counts of rodent infestations correlate with the energy costs in those specific neighborhoods in New York City. Here, we had some missing data for the year 2018 for energy costs, so the heat map displays the data from years 2019-2021.
+
 + **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
 Shreya conributes to looking for the required datasets.
 
 Woonsup contributes to prepocessing Rodent Inspections Dataset. 
 
-Shreya contributes to graphs of rodents inspections and energy trend line.
+Shreya contributes to graphs of rodents inspections and energy trend line and correlation matrix.
 
 Peng contributes to the ui design and the geographical zip code map.
 
