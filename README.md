@@ -53,6 +53,8 @@ Dhruv contributes to the summary and conclusion of the project.
 
 Zhongcheng is the presenter of the project.
 
+See [App](https://kazesword.shinyapps.io/fall5243-project2/)
+
 Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
 
 ```
