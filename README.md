@@ -24,7 +24,10 @@ Inspection Data:
 This tab shows a collection of bar plots and trend plots that display the number of inspections and rodent complaint data over time and before and after COVID.
 
 Energy:
-This tab shows a heat map and barplots of how the counts of rodent infestations correlate with the energy costs in those specific neighborhoods in New York City. Here, we had some missing data for the year 2018 for energy costs, so the heat map displays the data from years 2019-2021.
+This tab shows a heat map and barplots of how the counts of rodent infestations correlate with the energy costs in those specific neighborhoods in New York City. 
+
+Note for Missing Data:
+For the energy analysis, we had some missing data for the year 2018 for energy costs, so the heat map and barplots display the data from years 2019-2021. However, these years do provide insight into how the data differs before and after the COVID-19 Pandemic.
 
 
 ## Project Title Lorem ipsum dolor sit amet
