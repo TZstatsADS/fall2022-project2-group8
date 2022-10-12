@@ -34,13 +34,17 @@ Therefore, as an extermination and property maintenance company, we sought to pr
 
 + **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
-Woonsup contributes to the prepocessing and EDA of Rodent Inspections Dataset. 
+Shreya conributes to looking for the required datasets.
 
-Dhruv contributes to the summary and conclusion of the project.
+Woonsup contributes to prepocessing Rodent Inspections Dataset. 
 
-Shreya contributes to the graph of rodents inspections and energy trend line.
+Shreya contributes to graphs of rodents inspections and energy trend line.
 
 Peng contributes to the ui design and the geographical zip code map.
+
+Peng and shreya help debug the code.
+
+Dhruv contributes to the summary and conclusion of the project.
 
 Zhongcheng is the presenter of the project.
 
