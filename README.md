@@ -34,6 +34,12 @@ Therefore, as an extermination and property maintenance company, we sought to pr
 
 + **Contribution statement**: ([default](doc/a_note_on_contributions.md)) All team members contributed equally in all stages of this project. All team members approve our work presented in this GitHub repository including this contributions statement. 
 
+Woonsup contributes to the prepocessing and EDA of Rodent Inspections Dataset. 
+Dhruv contributes to the summary and conclusion of the project
+Shreya contributes to the graph of rodents inspections and energy trend line.
+Peng contributes to the ui design and the geographical zip code map.
+Zhongcheng is the presenter of the project.
+
 Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
 
 ```
