@@ -189,7 +189,8 @@ Therefore, as an extermination and property maintenance company, we sought to pr
                               plotOutput("plotgraph1"),
                               plotOutput("plotgraph2"),
                               plotOutput("plotgraph3"),
-                              plotOutput("plotgraph4")
+                              plotOutput("plotgraph4"),
+                              dataTableOutput('correlation')
                               
                               # )
                             )
