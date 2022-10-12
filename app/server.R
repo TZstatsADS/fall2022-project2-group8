@@ -71,7 +71,7 @@ if(!(file.exists("../data/df_pre_2020.csv"))){
 df_pre_2020 = df %>% 
   filter(year(inspection_date) < 2020) %>%
   sample_n(50000)
-write.csv(df_pre_2020, "../datadf_pre_2020.csv")
+write.csv(df_pre_2020, "../data/df_pre_2020.csv")
 }
 
 df_pre_2020 = read.csv("../data/df_pre_2020.csv")
