@@ -30,7 +30,7 @@ Note for Missing Data:
 For the energy analysis, we had some missing data for the year 2018 for energy costs, so the heat map and barplots display the data from years 2019-2021. However, these years do provide insight into how the data differs before and after the COVID-19 Pandemic.
 
 
-## Project Title Lorem ipsum dolor sit amet
+## Project Title Understanding Impacts of Rodent Infestations in New York City
 Term: Fall 2022
 
 + Team 8
