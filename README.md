@@ -60,7 +60,7 @@ Missing Data Note:
 In the energy dataset. we had some missing data for the year 2018 for energy costs, due to clerical steps in data collection. Thus, the heat map and barplots display the data from years 2019-2021, and the conclusions are derived from these three years..
 
 + **How to use the Application**:
-+ 
+ 
 1. Clone the github repository in your local computer. Run server.py . The app should get deployed for your machine. 
 2. Other alternative:Deploying it using the link provided for the app. 
 
