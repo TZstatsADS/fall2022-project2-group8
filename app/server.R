@@ -58,33 +58,92 @@ df = df %>%
   mutate(region=as.character(zip_code)) %>%
   mutate(inspection_date = strptime(inspection_date,"%m/%d/%Y %H:%M:%S")) %>%
   mutate(year = year(inspection_date)) %>%
-  mutate(month = month(inspection_date))
-
+  mutate(month = month(inspection_date)) 
+  
 
 df_post_2020 = df %>% 
   filter(year(inspection_date) >= 2020) %>%
   sample_n(50000) 
+write.csv(df_post_2020, "../data/df_post_2020.csv")
 
 df_pre_2020 = df %>% 
   filter(year(inspection_date) < 2020) %>%
   sample_n(50000)
+write.csv(df_pre_2020, "../data/df_pre_2020.csv")
+
+df_pre_2020$inspection_date_month_yr=format(as.Date(df_pre_2020$inspection_date), "%Y-%m")
+
+df_post_2020$inspection_date_month_yr=format(as.Date(df_post_2020$inspection_date), "%Y-%m")
+
+if(!(file.exists("../data/Electic_post_2018.csv"))){
+  elec = read.csv("../data/Electric_Consumption_And_Cost__2010_-_Feb_2022_.csv")
+  elec_post_2018 = elec %>% 
+    set_names(tolower(names(elec))) %>%
+    filter(year(strptime(elec$revenue.month,"%Y-%M")) >= 2018) 
+  
+  write.csv(elec_post_2018, "../data/Electic_post_2018.csv")
+}
+
+
+energy = read.csv("../data/Electic_post_2018.csv")
+
+
+energy_post_2020 = energy %>% 
+  filter(year(strptime(energy$revenue.month,"%Y-%M")) >= 2020,year(strptime(energy$revenue.month,"%Y-%M")) < 2021)
+
+energy_pre_2020 = energy %>% 
+  filter(year(strptime(energy$revenue.month,"%Y-%M")) < 2020) 
+
+
+
+energy_pre_2020_group=energy_pre_2020 %>%
+  group_by(borough,revenue.month) %>%
+  summarise(sum_consumption..kwh=sum(consumption..kwh.),sum_kwh.charges=sum(kwh.charges),
+            sum_consumption..kw.=sum(consumption..kw.),
+            kw.charges = sum(kw.charges))%>%
+  filter(year(strptime(revenue.month,"%Y-%M")) < 2020) 
+
+energy_post_2020_group=energy_post_2020 %>%
+  group_by(borough,revenue.month) %>%
+  summarise(sum_consumption..kwh=sum(consumption..kwh.),sum_kwh.charges=sum(kwh.charges),sum_consumption..kw.=sum(consumption..kw.),
+            kw.charges = sum(kw.charges))
+
+
+df_pre_2020_group= df_pre_2020%>%
+  group_by(inspection_date_month_yr,borough)%>%count()
+
+df_post_2020_group= df_post_2020%>%
+  group_by(inspection_date_month_yr,borough)%>%count()
 
 
 shinyServer(function(input, output) {
   
   ## Map Tab section
   output$left_map <- renderPlot({
-    if (input$inspection_type =='Overall') {
+    if (input$inspection_type =='Overall' & input$result=="Overall") {
       leaflet_plt_df = df_pre_2020 %>% 
         group_by(region) %>%
         summarise(
           value = n()
         ) 
-    } 
-    
-    else{
+    } else if(input$inspection_type != "Overall"){
+      leaflet_plt_df = df_pre_2020 %>% 
+        filter(inspection_type == input$inspection_type) %>%
+        group_by(region) %>%
+        summarise(
+          value = n()
+        ) 
+    }else if(input$result != "Overall"){
+      leaflet_plt_df = df_pre_2020 %>% 
+        filter(result == input$result) %>%
+        group_by(region) %>%
+        summarise(
+          value = n()
+        ) 
+    }else{
       leaflet_plt_df = df_pre_2020 %>%
         filter(inspection_type == input$inspection_type) %>%
+        filter(result == input$result) %>% 
         group_by(region) %>%
         summarise(
           value = n()
@@ -97,22 +156,33 @@ shinyServer(function(input, output) {
                    legend      = "Number of inspections",
                    county_zoom = 36061)
     
-    
-    
   }) #left map plot
   
   output$right_map <- renderPlot({
-    if (input$inspection_type =='Overall') {
-      leaflet_plt_df = df_post_2020 %>% 
+    if (input$inspection_type =='Overall' & input$result=="Overall") {
+      leaflet_plt_df = df_pre_2020 %>% 
         group_by(region) %>%
         summarise(
           value = n()
         ) 
-    } 
-    
-    else{
-      leaflet_plt_df = df_post_2020 %>%
+    } else if(input$inspection_type != "Overall"){
+      leaflet_plt_df = df_pre_2020 %>% 
         filter(inspection_type == input$inspection_type) %>%
+        group_by(region) %>%
+        summarise(
+          value = n()
+        ) 
+    }else if(input$result != "Overall"){
+      leaflet_plt_df = df_pre_2020 %>% 
+        filter(result == input$result) %>%
+        group_by(region) %>%
+        summarise(
+          value = n()
+        ) 
+    }else{
+      leaflet_plt_df = df_pre_2020 %>%
+        filter(inspection_type == input$inspection_type) %>%
+        filter(result == input$result) %>% 
         group_by(region) %>%
         summarise(
           value = n()
@@ -236,5 +306,48 @@ shinyServer(function(input, output) {
         ylab("Count") +
         ggtitle("Run Chart")
     }
+  })
+  
+
+  
+  output$plotgraph1 = renderPlot({
+    tmp = df_pre_2020_group %>% 
+      filter(borough == input$borough2)
+    ggplot(tmp, aes(x =inspection_date_month_yr,y=n,group = 1)) +
+      geom_line()+
+      xlab("Year") +
+      ylab("Count") + scale_x_discrete(guide = guide_axis(angle = 90))+
+      ggtitle("Count of Rodent complains Precovid")
+  })
+  
+  output$plotgraph2 <- renderPlot({
+    tmp = df_post_2020_group %>% 
+      filter(borough == input$borough2)
+    ggplot(tmp, aes(x =inspection_date_month_yr,y=n,group = 1)) +
+      geom_line()+
+      xlab("Year") +
+      ylab("Count") + scale_x_discrete(guide = guide_axis(angle = 90))+
+      ggtitle("Count of Rodent complains Post covid")
+  })
+  
+  output$plotgraph3 <- renderPlot({
+    tmp = energy_pre_2020_group %>% 
+      filter(borough == toupper(input$borough2))
+    ggplot(tmp, aes(x =revenue.month,y=sum_consumption..kwh,group=1)) +geom_line()+
+      xlab("Year") +
+      ylab("sum_consumption..kwh") + scale_x_discrete(guide = guide_axis(angle = 90))+
+      ggtitle("Electricity Precovid")
+  })
+  
+  output$plotgraph4 <- renderPlot({
+    tmp = energy_post_2020_group %>% 
+      filter(borough == toupper(input$borough2))
+    ggplot(tmp, aes(x =revenue.month,y=sum_consumption..kwh,group=1)) +geom_line()+
+      xlab("Year") +
+      ylab("sum_consumption..kwh") + scale_x_discrete(guide = guide_axis(angle = 90))+
+      ggtitle("Electricity Postcovid")
+    
+    
+
   })
 })
