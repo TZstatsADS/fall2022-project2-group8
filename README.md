@@ -2,7 +2,10 @@
 
 ### [Project Description](doc/project2_desc.md)
 
-![screenshot](doc/figs/map.jpg)
+![screenshot](doc/figs/homepage.png)
+![screenshot](doc/figs/map.png)
+![screenshot](doc/figs/graph1.png)
+![screenshot](doc/figs/graph2.png)
 
 In this second project of GR5243 Applied Data Science, we develop a *Exploratory Data Analysis and Visualization* shiny app on the work of a **NYC Rodents inspections** using NYC open data released on the [NYC Open Data By Agency](https://opendata.cityofnewyork.us/data/) website. See [Project 2 Description](doc/project2_desc.md) for more details.  
 
