@@ -74,7 +74,7 @@ Shreya contributes to graphs of rodents inspections and energy trend line and co
 
 Peng contributes to the ui design and the geographical zip code map.
 
-Peng and shreya help debug the code.
+Peng and Shreya help debug the code.
 
 Peng deployde shiny app.
 
