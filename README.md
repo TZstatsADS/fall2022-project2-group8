@@ -47,6 +47,8 @@ Peng contributes to the ui design and the geographical zip code map.
 
 Peng and shreya help debug the code.
 
+Peng deployde shiny app.
+
 Dhruv contributes to the summary and conclusion of the project.
 
 Zhongcheng is the presenter of the project.
